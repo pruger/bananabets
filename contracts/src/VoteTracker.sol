@@ -110,11 +110,11 @@ contract VoteTracker {
     // only Owner
     //
 
-    function startVotingPeriod() external onlyOwner {
+    function startVotingPeriod() external onlyOwner votingNotActive {
         isVotingActive = true;
     }
 
-    function endVotingPeriod() external onlyOwner {
+    function endVotingPeriod() external onlyOwner votingActive {
         isVotingActive = false;
     }
 
