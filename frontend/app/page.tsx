@@ -104,7 +104,7 @@ export default function Home() {
           },
         }
       );
-      window.alert(res);
+      console.log(res);
     // console.log(selectedProjects.map((val) => projectIds[val]));
     // try {
     //   await execHaloCmdWeb(
