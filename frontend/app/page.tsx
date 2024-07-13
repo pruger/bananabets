@@ -136,11 +136,13 @@ export default function Home() {
         },
       },
     );
-    const apiResult = await fetch(`${API_HOST}/send-transaction?` + new URLSearchParams({
+    const apiResult = await fetch(
+      `${API_HOST}/send-transaction?` +
+        new URLSearchParams({
           v: signResult.signature.raw.v,
-          r: signResult.signature.raw.r,
-          s: signResult.signature.raw.s,
-          hash: signResult.input.digest,
+          r: `0x${signResult.signature.raw.r}`,
+          s: `0x${signResult.signature.raw.s}`,
+          hash: `0x${signResult.input.digest}`,
           votes: signResult.input.message,
         }).toString(),
       { method: "POST" },
