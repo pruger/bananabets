@@ -173,6 +173,8 @@ export default function Home() {
       );
     }
     setScanLoading(false);
+    setNameModal(false);
+    setSelectedProjects([]);
   };
 
   return (
