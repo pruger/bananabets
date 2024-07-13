@@ -8,12 +8,12 @@ contract VoteTracker {
 	uint256[] public finalists;
 	bool public isVotingActive = false;
 
-	uint256 constant public POSITIVE_POINTS = 10;
-	uint256 constant public NEGATIVE_POINTS = 5;
+	int256 constant public POSITIVE_POINTS = 10;
+	int256 constant public NEGATIVE_POINTS = -5;
 
 	struct Leader {
 		address addr;
-		uint256 points;
+		int256 points;
 	}
 
 	// address private _owner; 
@@ -90,13 +90,14 @@ contract VoteTracker {
 
 	// get current leaderboard
 	function getLeaderboard() public view returns (Leader[] memory leaderboard) {
+		leaderboard = new Leader[](voters.length);
 		for (uint256 i = 0; i < voters.length; i++) {
 			leaderboard[i].addr = voters[i];
 			for (uint256 j = 0; j < votes[voters[i]].length; j++) {
 				if (isNumInArr(votes[voters[i]][j], finalists)) {
 					leaderboard[i].points += POSITIVE_POINTS;
 				} else {
-					leaderboard[i].points -= NEGATIVE_POINTS;
+					leaderboard[i].points += NEGATIVE_POINTS;
 				}
 			}
 		}
