@@ -75,7 +75,7 @@ export default function Home() {
   const [nameModal, setNameModal] = useState(false);
   const [username, setUsername] = useState("");
 
-  const modalBodyRef = useRef(null);
+  const modalBodyRef = useRef<HTMLElement | null>(null);
 
   const provider = new ethers.JsonRpcProvider(
     "https://jenkins.rpc.caldera.xyz/http",
