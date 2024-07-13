@@ -1,0 +1,49 @@
+{
+  "transactions": [
+    {
+      "hash": "0x756946f28513608648aed62dcab34626733f3140a5183b7de344282c8489e196",
+      "transactionType": "CALL",
+      "contractName": null,
+      "contractAddress": "0x003fe86d541a2ec57992242c1567eb43c60451fe",
+      "function": "startVotingPeriod()",
+      "arguments": [],
+      "transaction": {
+        "from": "0x1111eacb9a3a992b70e42b68f8b596a9070ec3aa",
+        "to": "0x003fe86d541a2ec57992242c1567eb43c60451fe",
+        "gas": "0xf661",
+        "value": "0x0",
+        "input": "0xc64482ab",
+        "nonce": "0x12",
+        "chainId": "0x706"
+      },
+      "additionalContracts": [],
+      "isFixedGasLimit": false
+    }
+  ],
+  "receipts": [
+    {
+      "status": "0x1",
+      "cumulativeGasUsed": "0xb537",
+      "logs": [],
+      "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "type": "0x2",
+      "transactionHash": "0x756946f28513608648aed62dcab34626733f3140a5183b7de344282c8489e196",
+      "transactionIndex": "0x1",
+      "blockHash": "0x90645e6cc04370fbff9258ef3f9f0fd08af5c70e6611965c554b0be7ec3aa06b",
+      "blockNumber": "0x1cd14",
+      "gasUsed": "0xb537",
+      "effectiveGasPrice": "0x5f5e100",
+      "from": "0x1111eacb9a3a992b70e42b68f8b596a9070ec3aa",
+      "to": "0x003fe86d541a2ec57992242c1567eb43c60451fe",
+      "contractAddress": null,
+      "gasUsedForL1": "0x2d7",
+      "l1BlockNumber": "0x60324a"
+    }
+  ],
+  "libraries": [],
+  "pending": [],
+  "returns": {},
+  "timestamp": 1720895547,
+  "chain": 1798,
+  "commit": "e7a9ed0"
+}

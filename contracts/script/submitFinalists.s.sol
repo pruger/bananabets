@@ -9,7 +9,7 @@ contract SubmitFinalistsScript is Script {
 
     function run(address addr) external {
         VoteTracker tracker = VoteTracker(addr);
-        uint16[3] memory const_finalists = [uint16(1), 2, 3];
+        uint16[1] memory const_finalists = [uint16(58)];
         finalists = const_finalists;
         vm.broadcast();
         tracker.submitFinalists(finalists);

@@ -13,8 +13,17 @@ contract StatusScript is Script {
         console.log("negativeFactor:");
         console.logInt(tracker.negativeFactor());
         console.log("voting is active:", tracker.isVotingActive());
-        // console.log("vote Counts:");
-        // console.log(tracker.getVotersCount());
+        console.log("vote Counts:");
+        console.log(tracker.getVotersCount());
+        // console.log("first voter first vote:");
+        // uint16 luca_vote = tracker.addrToVote(tracker.voters(0), 0);
+        // console.log("finalists:");
+        // console.log(tracker.finalistIds(0));
+        console.log("projects:");
+        string[] memory projects = tracker.getProjectIds();
+        for (uint256 i = 0; i < projects.length; i++) {
+            console.log(i, projects[i]);
+        }
         console.log("Leaderboard:");
         VoteTracker.Leader[] memory leaderboard = tracker.getLeaderboard();
         for (uint256 i = 0; i < leaderboard.length; i++) {
