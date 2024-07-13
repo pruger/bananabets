@@ -9,9 +9,7 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
-  Checkbox,
   Image,
-  Link,
 } from "@nextui-org/react";
 // @ts-ignore
 import { execHaloCmdWeb } from "@arx-research/libhalo/api/web.js";
@@ -19,9 +17,8 @@ import { toast } from "react-toastify";
 import { ethers } from "ethers";
 
 import abi from "@/public/abi.json";
-
-const API_HOST = "https://predictionmarketapi.cleartxn.xyz";
 const CONTRACT_ADDRESS = "0xf7aDef4252fbba21ba8274E02cceB9F25f4f6FE4";
+const API_HOST = "https://predictionmarketapi.cleartxn.xyz";
 
 interface ProjectTileProps {
   title: string;
@@ -68,8 +65,6 @@ export default function Home() {
   const [searchedProjects, setSearchedProjects] = useState<string[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [projectIds, setProjectIds] = useState<{ [key: string]: number }>({});
-
-  console.log(selectedProjects);
 
   const provider = new ethers.JsonRpcProvider(
     "https://jenkins.rpc.caldera.xyz/http",
