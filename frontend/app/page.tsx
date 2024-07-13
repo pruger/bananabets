@@ -7,7 +7,6 @@ import {
   Button,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   Checkbox,
   Image,
@@ -15,9 +14,13 @@ import {
 // @ts-ignore
 import { execHaloCmdWeb } from "@arx-research/libhalo/api/web.js";
 import { toast } from "react-toastify";
+import { ethers } from "ethers";
 
 import { siteConfig } from "@/config/site";
 import { title } from "@/components/primitives";
+import abi from "@/public/abi.json";
+
+const API_HOST = "https://predictionmarketapi.cleartxn.xyz";
 
 interface ProjectTileProps {
   title: string;
@@ -25,7 +28,6 @@ interface ProjectTileProps {
   image: string;
   onSelect: () => void;
   selected: boolean;
-  selectDisabled: boolean;
 }
 
 const ProjectTile: React.FC<ProjectTileProps> = ({
@@ -34,90 +36,121 @@ const ProjectTile: React.FC<ProjectTileProps> = ({
   image,
   onSelect,
   selected,
-  selectDisabled,
 }) => (
   <Card className="py-4 w-64 h-96">
-    <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-      <h4 className="font-bold text-large">{title}</h4>
-      <small className="text-default-500">{description}</small>
-    </CardHeader>
-    <CardBody className="overflow-visible py-2">
+    <CardHeader className="pb-0 pt-2 px-4 flex-col items-center">
       <Image
-        alt="Card background"
+        alt="Card image"
         className="object-cover rounded-xl"
         src={image}
-        width={270}
+        style={{ objectFit: "cover", height: "150px", maxHeight: "150px" }}
       />
+    </CardHeader>
+    <CardBody className="overflow-visible py-2">
+      <h4 className="font-bold text-large">{title}</h4>
+      <small className="text-default-500">{description}</small>
+      <div className="flex items-center justify-center">
+        <Checkbox isSelected={selected} onChange={onSelect}>
+          Finalist?
+        </Checkbox>
+      </div>
     </CardBody>
-    <CardFooter>
-      <Checkbox
-        isDisabled={selectDisabled}
-        isSelected={selected}
-        onChange={onSelect}
-      >
-        Finalist?
-      </Checkbox>
-    </CardFooter>
   </Card>
 );
 
 export default function Home() {
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
+  const [searchedProjects, setSearchedProjects] = useState<string[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
+  const [projectIds, setProjectIds] = useState<{ [key: string]: number }>({});
+
+  const provider = new ethers.JsonRpcProvider(
+    "https://jenkins.rpc.caldera.xyz/http",
+    1798,
+  );
 
   useEffect(() => {
     (async () => {
-      const res = await fetch(
-        "https://predictionmarketapi.cleartxn.xyz/projects",
-      ).then((res) => res.json());
+      const res = await fetch(`${API_HOST}/projects`).then((res) => res.json());
+      const contract = new ethers.Contract(
+        "0xf7aDef4252fbba21ba8274E02cceB9F25f4f6FE4",
+        abi,
+        provider,
+      );
+      const result = await contract.getProjectIds();
+
+      setProjectIds(
+        result.reduce((acc: any, curr: any, index: any) => {
+          acc[curr] = index;
+
+          return acc;
+        }, {}),
+      );
 
       setProjects(res);
+      setSearchedProjects(res);
     })();
   }, []);
 
   const onSubmit = async () => {
-    try {
-      await execHaloCmdWeb({
-          name: "sign",
-          keyNo: 1,
-          message: "000100020003",
-          // legacySignCommand: true,
+      const res = await execHaloCmdWeb(
+        {
+          name: "get_data_struct",
+          spec: "latchValue:1,publicKey:1",
         },
         {
           statusCallback: (cause: string) => {
-            if (cause === "init") {
-              toast.info(
-                "Please tap the tag to the back of your smartphone and hold it...",
-              );
-            } else if (cause === "retry") {
-              toast.warning(
-                "Something went wrong, please try to tap the tag again...",
-              );
-            } else if (cause === "scanned") {
-              toast.success(
-                "Tag scanned successfully, post-processing the result...",
-              );
-            } else {
-              toast.error("An error occurred, please try again...");
-            }
+            window.alert(cause);
           },
-        },
+        }
       );
-    } catch (err) {
-      toast.error("An error occurred, please try again...");
-    }
+
+    console.log(
+      `https://nfc.ethglobal.com?pk1=${res["data"]["publicKey:1"].toUpperCase()}&latch1=${res["data"]["latchValue:1"].toUpperCase()}`,
+    );
+    // console.log(selectedProjects.map((val) => projectIds[val]));
+    // try {
+    //   await execHaloCmdWeb(
+    //     {
+    //       name: "sign",
+    //       keyNo: 1,
+    //       message: "000100020003",
+    //     },
+    //     {
+    //       statusCallback: (cause: string) => {
+    //         if (cause === "init") {
+    //           toast.info(
+    //             "Please tap the tag to the back of your smartphone and hold it...",
+    //           );
+    //         } else if (cause === "retry") {
+    //           toast.warning(
+    //             "Something went wrong, please try to tap the tag again...",
+    //           );
+    //         } else if (cause === "scanned") {
+    //           toast.success(
+    //             "Tag scanned successfully, post-processing the result...",
+    //           );
+    //         } else {
+    //           toast.error("An error occurred, please try again...");
+    //         }
+    //       },
+    //     },
+    //   );
+    // } catch (err: any) {
+    //   toast.error(err);
+    // }
   };
 
   return (
     <section className="flex flex-col items-center justify-center h-full gap-4">
-      <div className="absolute bottom-0 left-0 flex w-full items-center justify-center z-50 p-4 bg-gradient-to-t from-green-500">
+      <div className="absolute bottom-0 left-0 flex w-full items-center justify-center z-50 p-4 bg-gradient-to-t from-white">
         <Button
           className="w-full cursor-pointer"
           color="primary"
           size="md"
           onClick={onSubmit}
         >
-          Submit - {selectedProjects.length} / 10
+          Sign And Submit
         </Button>
       </div>
       <div className="flex justify-center items-center w-full">
@@ -131,24 +164,30 @@ export default function Home() {
         isClearable
         placeholder="Search..."
         startContent={<MagnifyingGlassIcon className="w-5 h-5" />}
+        onChange={(e) => {
+          setSearchedProjects(
+            e.target.value !== ""
+              ? projects.filter((p) =>
+                  p.name.toLowerCase().includes(e.target.value.toLowerCase()),
+                )
+              : projects,
+          );
+        }}
+        onClear={() => setSearchedProjects(projects)}
       />
       <div className="flex gap-4 h-full flex-wrap overflow-y-scroll justify-center pb-20">
-        {projects.map((project: any) => (
+        {searchedProjects.map((project: any) => (
           <ProjectTile
-            key={project.name}
+            key={project.id}
             description={project.description}
             image={project.image}
-            selectDisabled={
-              selectedProjects.length >= 10 &&
-              !selectedProjects.includes(project.name)
-            }
-            selected={selectedProjects.includes(project.name)}
+            selected={selectedProjects.includes(project.id)}
             title={project.name}
             onSelect={() => {
               setSelectedProjects((prevSelectedProjects) =>
-                prevSelectedProjects.includes(project.name)
-                  ? prevSelectedProjects.filter((p) => p !== project.name)
-                  : [...prevSelectedProjects, project.name]
+                prevSelectedProjects.includes(project.id)
+                  ? prevSelectedProjects.filter((p) => p !== project.id)
+                  : [...prevSelectedProjects, project.name],
               );
             }}
           />

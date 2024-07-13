@@ -76,8 +76,12 @@ def scrape_projects():
                     FINALIST_IMAGE_PART in img_url for img_url in trophy_images
                 )
 
+                # Extract the id from the last 5 characters of the link
+                id = link[-5:]
+
                 projects.append(
                     {
+                        "id": id,
                         "name": name,
                         "description": description,
                         "link": link,
