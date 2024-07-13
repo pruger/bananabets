@@ -49,6 +49,10 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
+        <div
+          className="fixed top-0 left-0 w-full h-full z-20 pointer-events-none"
+          id="apeBackground"
+        />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           {/* <MobileOnlyApp> */}
           <Navbar />

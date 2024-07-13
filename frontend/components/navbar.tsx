@@ -2,12 +2,11 @@
 import { Link } from "@nextui-org/link";
 import Image from "next/image";
 import { useTheme } from "next-themes";
-
-import { title } from "./primitives";
-
-import { siteConfig } from "@/config/site";
-import apemode from "@/public/apemode.gif";
 import { useEffect, useState } from "react";
+
+import activate_apemode_gif from "@/public/activate_apemode.gif";
+import activate_apemode from "@/public/activate_apemode.png";
+
 
 const Navbar: React.FC = () => {
   const [startApemode, setStartApemode] = useState(false);
@@ -33,7 +32,7 @@ const Navbar: React.FC = () => {
     // Set random animation duration
     raindrop.style.animationDuration = 2 + Math.random() * 3 + "s";
 
-    document.body.appendChild(raindrop);
+    document.getElementById("apeBackground")?.appendChild(raindrop);
 
     // Remove raindrop after animation ends
     raindrop.addEventListener("animationend", function () {
@@ -49,7 +48,7 @@ const Navbar: React.FC = () => {
     if (startApemode) {
       setTheme("dark");
       backgroundMusic.play();
-      setRaindropTimeout(setInterval(createRaindrop, 200));
+      setRaindropTimeout(setInterval(createRaindrop, 2000));
     } else {
       backgroundMusic.pause();
       backgroundMusic.currentTime = 0;
@@ -71,7 +70,7 @@ const Navbar: React.FC = () => {
       <Image
         alt="GorillaGamble"
         className="object-cover rounded-xl cursor-pointer"
-        src={apemode}
+        src={startApemode ? activate_apemode_gif : activate_apemode}
         width={450}
         onClick={() => setStartApemode(!startApemode)}
       />
