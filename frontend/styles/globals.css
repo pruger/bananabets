@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.raindrop {
+	position: absolute;
+	pointer-events: none;
+	background: url('/apechain.png') no-repeat center center / contain;
+	animation: fall linear infinite;
+}
+@keyframes fall {
+	to {
+		transform: translateY(100vh);
+	}
+}
