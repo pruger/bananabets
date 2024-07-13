@@ -17,7 +17,7 @@ import { toast } from "react-toastify";
 import { ethers } from "ethers";
 
 import abi from "@/public/abi.json";
-const CONTRACT_ADDRESS = "0xf7aDef4252fbba21ba8274E02cceB9F25f4f6FE4";
+const CONTRACT_ADDRESS = "0x003FE86d541a2EC57992242c1567eb43C60451fE";
 const API_HOST = "https://predictionmarketapi.cleartxn.xyz";
 
 interface ProjectTileProps {
