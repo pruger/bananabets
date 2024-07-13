@@ -8,7 +8,7 @@ contract VoteTracker {
 
     address[] public voters;
     mapping(address => uint16[]) public addrToVote;
-    mapping(string => uint16) public projectNameToId;
+    string[] public projectIdArr;
     uint16[] public finalistIds;
     bool public isVotingActive = false;
 
@@ -89,10 +89,9 @@ contract VoteTracker {
         return leaderboard;
     }
 
-    function getProjectId(
-        string memory projectId
-    ) external view returns (uint256) {
-        return projectNameToId[projectId];
+    function getProjectIds(
+    ) external view returns (string[] memory projectIds) {
+        return projectIdArr;
     }
 
     function getVoteCountForProject(
@@ -122,7 +121,7 @@ contract VoteTracker {
         string[] memory projectIds
     ) external onlyOwner votingNotActive {
         for (uint16 i = 0; i < projectIds.length; i++) {
-            projectNameToId[projectIds[i]] = i;
+            projectIdArr.push(projectIds[i]);
         }
     }
 

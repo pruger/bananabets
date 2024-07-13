@@ -22,7 +22,7 @@ contract VoteTrackerTest is Test {
 
     function test_SubmitShowcaseData() public {
         tracker.submitShowcaseData(projectIdsTest);
-        assertEq(tracker.getProjectId(projectIdsTest[2]), 2);
+        assertEq(tracker.getProjectIds()[0], "project0");
     }
 
     function test_submitVote() public {
