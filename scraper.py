@@ -4,27 +4,36 @@ import json
 
 BASE_URL = "https://ethglobal.com"
 EVENT = "eventname"
-PAGES = 20 
 
 def scrape_projects():
     projects = []
-    for page in range(1, PAGES + 1):
+    project_links = set()
+    page = 1
+
+    while True:
         url = f"{BASE_URL}/showcase/page/{page}?events={EVENT}"
         try:
             response = requests.get(url)
             response.raise_for_status()
         except requests.exceptions.RequestException as e:
             print(f"Error fetching page {page}: {e}")
-            continue
+            break
 
         soup = BeautifulSoup(response.text, 'html.parser')
         project_cards = soup.find_all('a', class_='block border-2 border-black rounded overflow-hidden relative')
 
+        new_projects_found = False
         for a in project_cards:
+            link = BASE_URL + a['href']
+            if link in project_links:
+                continue
+            
+            project_links.add(link)
+            new_projects_found = True
+
             try:
                 name = a.find('h2', class_='text-2xl').text.strip()
                 description = a.find('p', class_='text-sm mt-4 mb-4').text.strip()
-                link = BASE_URL + a['href']
                 image = a.find('img', alt='cover photo')['src']
                 winner = a.find('img', alt='trophy') is not None
                 
@@ -38,6 +47,11 @@ def scrape_projects():
             except AttributeError as e:
                 print(f"Error parsing project card: {e}")
                 continue
+        
+        if not new_projects_found:
+            break
+
+        page += 1
 
     print(f"Scraped {len(projects)} projects.")
     return projects
