@@ -8,7 +8,7 @@ contract VoteTrackerTest is Test, VoteTracker {
 	VoteTracker public tracker;
 
 	string[] public projectIdsTest = ["project0", "project1", "project2", "project3", "project4"];
-	string[] public finalistsTest = ["project1", "project2"];
+	uint256[] public finalistsTest = [0, 1];
 
 	function setUp() public {
 		tracker = new VoteTracker();
@@ -33,7 +33,9 @@ contract VoteTrackerTest is Test, VoteTracker {
 
 	function test_getLeaderboard() public {
 		test_submitVote();
+		tracker.endVotingPeriod();
+		tracker.submitFinalists(finalistsTest);
 		Leader[] memory leaderboardTest = tracker.getLeaderboard();
-		console("Leaderboard: ");
+		assertEq(leaderboardTest[0].points, 0);
 	}
 }
