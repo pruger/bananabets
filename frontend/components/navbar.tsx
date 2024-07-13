@@ -10,8 +10,6 @@ import activate_apemode from "@/public/activate_apemode.png";
 
 const Navbar: React.FC = () => {
   const [startApemode, setStartApemode] = useState(false);
-  const [raindropTimeout, setRaindropTimeout] =
-    useState<NodeJS.Timeout | null>();
   const { setTheme } = useTheme();
 
   const createRaindrop = () => {
@@ -34,10 +32,10 @@ const Navbar: React.FC = () => {
 
     document.getElementById("apeBackground")?.appendChild(raindrop);
 
-    // Remove raindrop after animation ends
-    raindrop.addEventListener("animationend", function () {
-      document.body.removeChild(raindrop);
-    });
+    // // Remove raindrop after animation ends
+    // raindrop.addEventListener("animationend", function () {
+    //   document.getElementById("apeBackground")?.removeChild(raindrop);
+    // });
 }
 
   useEffect(() => {
@@ -48,11 +46,22 @@ const Navbar: React.FC = () => {
     if (startApemode) {
       setTheme("dark");
       backgroundMusic.play();
-      setRaindropTimeout(setInterval(createRaindrop, 2000));
+      let count = 0;
+
+      const callFunction = () => {
+        if (count < 50 && startApemode) {
+          createRaindrop();
+          count++;
+          const randomDelay = Math.floor(Math.random() * (100 - 10 + 1)) + 10;
+
+          setTimeout(callFunction, randomDelay);
+        }
+      };
+
+      callFunction();
     } else {
       backgroundMusic.pause();
       backgroundMusic.currentTime = 0;
-      clearInterval(raindropTimeout as NodeJS.Timeout);
       document.querySelectorAll(".raindrop").forEach(function (raindrop) {
         raindrop.remove();
       });
