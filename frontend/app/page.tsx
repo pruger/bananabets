@@ -93,52 +93,50 @@ export default function Home() {
   }, []);
 
   const onSubmit = async () => {
-      const res = await execHaloCmdWeb(
-        {
-          name: "get_data_struct",
-          spec: "latchValue:1,publicKey:1",
-        },
-        {
-          statusCallback: (cause: string) => {
-            window.alert(cause);
-          },
-        }
-      );
+    // const res = await execHaloCmdWeb(
+    //   {
+    //     name: "get_data_struct",
+    //     spec: "latchValue:1,publicKey:1",
+    //   },
+    //   {
+    //     statusCallback: (cause: string) => {
+    //       window.alert(cause);
+    //     },
+    //   }
+    // );
+    // console.log(
+    //   `https://nfc.ethglobal.com?pk1=${res["data"]["publicKey:1"].toUpperCase()}&latch1=${res["data"]["latchValue:1"].toUpperCase()}`,
+    // );
 
-    console.log(
-      `https://nfc.ethglobal.com?pk1=${res["data"]["publicKey:1"].toUpperCase()}&latch1=${res["data"]["latchValue:1"].toUpperCase()}`,
+    // const votedIds = selectedProjects.map((val) => projectIds[val]);
+    const votedIds = [10, 4, 5, 6];
+    const signResult = await execHaloCmdWeb(
+      {
+        name: "sign",
+        keyNo: 1,
+        message: votedIds.map((id) => id.toString().padStart(4, "0")).join(""),
+      },
+      {
+        statusCallback: (cause: string) => {
+          if (cause === "init") {
+            toast.info(
+              "Please tap the tag to the back of your smartphone and hold it...",
+            );
+          } else if (cause === "retry") {
+            toast.warning(
+              "Something went wrong, please try to tap the tag again...",
+            );
+          } else if (cause === "scanned") {
+            toast.success(
+              "Tag scanned successfully, post-processing the result...",
+            );
+          } else {
+            toast.error("An error occurred, please try again...");
+          }
+        },
+      },
     );
-    // console.log(selectedProjects.map((val) => projectIds[val]));
-    // try {
-    //   await execHaloCmdWeb(
-    //     {
-    //       name: "sign",
-    //       keyNo: 1,
-    //       message: "000100020003",
-    //     },
-    //     {
-    //       statusCallback: (cause: string) => {
-    //         if (cause === "init") {
-    //           toast.info(
-    //             "Please tap the tag to the back of your smartphone and hold it...",
-    //           );
-    //         } else if (cause === "retry") {
-    //           toast.warning(
-    //             "Something went wrong, please try to tap the tag again...",
-    //           );
-    //         } else if (cause === "scanned") {
-    //           toast.success(
-    //             "Tag scanned successfully, post-processing the result...",
-    //           );
-    //         } else {
-    //           toast.error("An error occurred, please try again...");
-    //         }
-    //       },
-    //     },
-    //   );
-    // } catch (err: any) {
-    //   toast.error(err);
-    // }
+    console.log(signResult);
   };
 
   return (
@@ -187,7 +185,7 @@ export default function Home() {
               setSelectedProjects((prevSelectedProjects) =>
                 prevSelectedProjects.includes(project.id)
                   ? prevSelectedProjects.filter((p) => p !== project.id)
-                  : [...prevSelectedProjects, project.name],
+                  : [...prevSelectedProjects, project.id],
               );
             }}
           />
