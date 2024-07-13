@@ -1,6 +1,6 @@
 "use client";
 import {
-	Avatar,
+  Avatar,
   Table,
   TableBody,
   TableCell,
@@ -9,10 +9,10 @@ import {
   TableRow,
 } from "@nextui-org/react";
 import { ethers } from "ethers";
+import { useEffect, useState } from "react";
 
 import abi from "@/public/abi.json";
-import { useEffect, useState } from "react";
-const CONTRACT_ADDRESS = "0x003FE86d541a2EC57992242c1567eb43C60451fE";
+const CONTRACT_ADDRESS = "0x581aE9cD8e6AFfF77f1D45aF5274f3a2C1D8644d";
 
 export default function Leaderboard() {
   const [leaderboard, setLeaderboard] = useState<[string, number][]>([]);
@@ -33,6 +33,8 @@ export default function Leaderboard() {
         return acc;
       }, {});
 
+      console.log(result);
+
       setLeaderboard(
         (Object.entries(result) as [string, number][]).sort(
           ([, a], [, b]) => b - a,
@@ -40,6 +42,8 @@ export default function Leaderboard() {
       );
     })();
   }, []);
+
+  console.log(leaderboard);
 
   return (
     <>

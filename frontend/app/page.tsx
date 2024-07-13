@@ -10,6 +10,11 @@ import {
   CardFooter,
   CardHeader,
   Image,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
 } from "@nextui-org/react";
 // @ts-ignore
 import { execHaloCmdWeb } from "@arx-research/libhalo/api/web.js";
@@ -17,7 +22,7 @@ import { toast } from "react-toastify";
 import { ethers } from "ethers";
 
 import abi from "@/public/abi.json";
-const CONTRACT_ADDRESS = "0x003FE86d541a2EC57992242c1567eb43C60451fE";
+const CONTRACT_ADDRESS = "0x581aE9cD8e6AFfF77f1D45aF5274f3a2C1D8644d";
 const API_HOST = "https://predictionmarketapi.cleartxn.xyz";
 
 interface ProjectTileProps {
@@ -35,7 +40,7 @@ const ProjectTile: React.FC<ProjectTileProps> = ({
   onSelect,
   selected,
 }) => (
-  <Card className="py-4 w-64 h-96">
+  <Card className="py-4 sm:w-64" fullWidth>
     <CardHeader className="pb-0 pt-2 px-4 flex-col items-center">
       <Image
         alt="Card image"
@@ -66,6 +71,9 @@ export default function Home() {
   const [projects, setProjects] = useState<any[]>([]);
   const [projectIds, setProjectIds] = useState<{ [key: string]: number }>({});
   const [scanLoading, setScanLoading] = useState(false);
+
+  const [nameModal, setNameModal] = useState(false);
+  const [username, setUsername] = useState("");
 
   const provider = new ethers.JsonRpcProvider(
     "https://jenkins.rpc.caldera.xyz/http",
@@ -145,6 +153,7 @@ export default function Home() {
             s: `0x${signResult.signature.raw.s}`,
             hash: `0x${signResult.input.digest}`,
             votes: signResult.input.message,
+            name: username,
           }).toString(),
         { method: "POST" },
       );
@@ -166,6 +175,38 @@ export default function Home() {
 
   return (
     <section className="flex flex-col items-center justify-center h-full">
+      <Modal
+        hideCloseButton={true}
+        isDismissable={false}
+        isKeyboardDismissDisabled={true}
+        isOpen={nameModal}
+        placement="auto"
+        size="2xl"
+      >
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">
+            Enter Username
+          </ModalHeader>
+          <ModalBody>
+            <Input
+              label="Username"
+              type="username"
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              className="w-full"
+              color="primary"
+              isDisabled={username.length < 3 || username.length > 29}
+              isLoading={scanLoading}
+              onClick={onSubmit}
+            >
+              Sign And Submit
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
       <Input
         isClearable
         className="p-4"
@@ -182,7 +223,7 @@ export default function Home() {
         }}
         onClear={() => setSearchedProjects(projects)}
       />
-      <div className="flex gap-4 h-full flex-wrap overflow-y-scroll justify-center pb-20">
+      <div className="flex gap-4 h-full flex-wrap overflow-y-scroll justify-center px-5 pt-5 pb-20">
         {searchedProjects.map((project: any) => (
           <ProjectTile
             key={project.id}
@@ -205,9 +246,8 @@ export default function Home() {
           className="w-full cursor-pointer"
           color="primary"
           isDisabled={selectedProjects.length === 0}
-          isLoading={scanLoading}
           size="md"
-          onClick={onSubmit}
+          onClick={() => setNameModal(true)}
         >
           Sign And Submit
         </Button>

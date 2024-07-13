@@ -17,6 +17,25 @@
 	},
 	{
 		"type": "function",
+		"name": "addrToName",
+		"inputs": [
+			{
+				"name": "",
+				"type": "address",
+				"internalType": "address"
+			}
+		],
+		"outputs": [
+			{
+				"name": "",
+				"type": "string",
+				"internalType": "string"
+			}
+		],
+		"stateMutability": "view"
+	},
+	{
+		"type": "function",
 		"name": "addrToVote",
 		"inputs": [
 			{
@@ -72,6 +91,11 @@
 						"name": "addr",
 						"type": "address",
 						"internalType": "address"
+					},
+					{
+						"name": "name",
+						"type": "string",
+						"internalType": "string"
 					},
 					{
 						"name": "points",
@@ -261,6 +285,11 @@
 				"name": "message",
 				"type": "bytes",
 				"internalType": "bytes"
+			},
+			{
+				"name": "name",
+				"type": "string",
+				"internalType": "string"
 			}
 		],
 		"outputs": [],
