@@ -65,6 +65,7 @@ export default function Home() {
   const [searchedProjects, setSearchedProjects] = useState<string[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [projectIds, setProjectIds] = useState<{ [key: string]: number }>({});
+  const [scanLoading, setScanLoading] = useState(false);
 
   const provider = new ethers.JsonRpcProvider(
     "https://jenkins.rpc.caldera.xyz/http",
@@ -107,6 +108,7 @@ export default function Home() {
     // );
 
     try {
+      setScanLoading(true);
       const votedIds = selectedProjects.map((val) => projectIds[val]);
       const signResult = await execHaloCmdWeb(
         {
@@ -159,6 +161,7 @@ export default function Home() {
         "An error occurred, please check if the voting is still open...",
       );
     }
+    setScanLoading(false);
   };
 
   return (
@@ -201,6 +204,8 @@ export default function Home() {
         <Button
           className="w-full cursor-pointer"
           color="primary"
+          disabled={selectedProjects.length === 0}
+          isLoading={scanLoading}
           size="md"
           onClick={onSubmit}
         >
