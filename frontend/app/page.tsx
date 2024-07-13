@@ -204,7 +204,7 @@ export default function Home() {
         <Button
           className="w-full cursor-pointer"
           color="primary"
-          disabled={selectedProjects.length === 0}
+          isDisabled={selectedProjects.length === 0}
           isLoading={scanLoading}
           size="md"
           onClick={onSubmit}
