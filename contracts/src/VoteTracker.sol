@@ -1,122 +1,163 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import {MessageValidator} from "./MessageValidator.sol";
+
 contract VoteTracker {
-	address[] public voters;
-	mapping (address => uint256[]) public votes;
-	mapping (string => uint256) public projects;
-	uint256[] public finalists;
-	bool public isVotingActive = false;
+    MessageValidator public messageValidator;
 
-	int256 constant public POSITIVE_POINTS = 10;
-	int256 constant public NEGATIVE_POINTS = -5;
+    address[] public voters;
+    mapping(address => uint16[]) public addrToVote;
+    mapping(string => uint16) public projectNameToId;
+    uint16[] public finalistIds;
+    bool public isVotingActive = false;
 
-	struct Leader {
-		address addr;
-		int256 points;
-	}
+    int256 public positiveFactor;
+    int256 public negativeFactor;
 
-	// address private _owner; 
-	
-	// Sets the original owner of  
-	// contract when it is deployed 
-	// constructor() 
-	// {
-	// 	_owner = msg.sender; 
-	// }
+    struct Leader {
+        address addr;
+        int256 points;
+    }
 
-	// start voting period
-	function startVotingPeriod() public {
-		// require(msg.sender == _owner);
-		isVotingActive = true;
-	}
+    address private _owner;
+    constructor(int256 _positiveFactor, int256 _negativeFactor) {
+		positiveFactor = _positiveFactor;
+		negativeFactor = _negativeFactor;
+        _owner = msg.sender;
+        messageValidator = new MessageValidator();
+    }
 
-	// end voting period
-	function endVotingPeriod() public {
-		// require(msg.sender == _owner);
-		isVotingActive = false;
-	}
+    modifier onlyOwner() {
+        // require(msg.sender == _owner);
+        _;
+    }
 
-	// Submit showcase data
-	function submitShowcaseData(string[] memory projectIds) public {
-		// require(msg.sender == _owner);
-		require(!isVotingActive, "Voting period already started");
+    modifier votingActive() {
+        require(isVotingActive, "Voting period is not active");
+        _;
+    }
 
-		for (uint256 i = 0; i < projectIds.length; i++) {
-			projects[projectIds[i]] = i;
-		}
-	}
+    modifier votingNotActive() {
+        require(!isVotingActive, "Voting period is active");
+        _;
+    }
 
-	function isNumDouble(uint256[] memory arr) public pure returns (bool) {
-		for (uint i = 0; i < arr.length; i++) {
-			for (uint j = 0; j < arr.length; j++) {
-				if (arr[i] == arr[j] && i != j) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+    //
+    // public
+    //
 
-	// Submit votes
-	function submitVotes(uint256[] memory _votes) public {
-		require(isVotingActive, "Voting period is not active");
+    function submitVote(
+        uint8 v,
+        bytes32 r,
+        bytes32 s,
+        bytes32 hash,
+        bytes calldata message
+    ) external {
+        address sender;
+        uint16[] memory addressToVote;
+        (sender, addressToVote) = messageValidator.validateAndExtractData(
+            v,
+            r,
+            s,
+            hash,
+            message
+        );
+		if (isNumDouble(addressToVote)) {
+            revert("Duplicate addressToVote");
+        }
+		voters.push(sender);
+		addrToVote[sender] = addressToVote;
+    }
 
-		if (isNumDouble(_votes)) {
-			revert("Duplicate votes");
-		}
-		voters.push(msg.sender);
-		votes[msg.sender] = _votes;
-	}
+    function getLeaderboard()
+        external
+        view
+        returns (Leader[] memory leaderboard)
+    {
+        leaderboard = new Leader[](voters.length);
+        for (uint256 i = 0; i < voters.length; i++) {
+            leaderboard[i].addr = voters[i];
+            for (uint256 j = 0; j < addrToVote[voters[i]].length; j++) {
+                if (isNumInArr(addrToVote[voters[i]][j], finalistIds)) {
+                    leaderboard[i].points += positiveFactor;
+                } else {
+                    leaderboard[i].points += negativeFactor;
+                }
+            }
+        }
+        return leaderboard;
+    }
 
-	// submit finalists
-	function submitFinalists(uint256[] memory finalistIds) public {
-		// require(msg.sender == _owner);
-		require(!isVotingActive, "Voting period still active");
+    function getProjectId(
+        string memory projectId
+    ) external view returns (uint256) {
+        return projectNameToId[projectId];
+    }
 
-		for (uint256 i = 0; i < finalistIds.length; i++) {
-			finalists.push(finalistIds[i]);
-		}
-	}
+    function getVoteCountForProject(
+        uint16 projectId
+    ) external view returns (uint256 voteCount) {
+        for (uint256 i = 0; i < voters.length; i++) {
+            if (isNumInArr(projectId, addrToVote[voters[i]])) {
+                voteCount++;
+            }
+        }
+        return voteCount;
+    }
 
-	function isNumInArr(uint256 num, uint256[] memory arr) public pure returns (bool) {
-		for (uint i = 0; i < arr.length; i++) {
-			if (arr[i] == num) {
-				return true;
-			}
-		}
-		return false;
-	}
+    //
+    // only Owner
+    //
 
-	// get current leaderboard
-	function getLeaderboard() public view returns (Leader[] memory leaderboard) {
-		leaderboard = new Leader[](voters.length);
-		for (uint256 i = 0; i < voters.length; i++) {
-			leaderboard[i].addr = voters[i];
-			for (uint256 j = 0; j < votes[voters[i]].length; j++) {
-				if (isNumInArr(votes[voters[i]][j], finalists)) {
-					leaderboard[i].points += POSITIVE_POINTS;
-				} else {
-					leaderboard[i].points += NEGATIVE_POINTS;
-				}
-			}
-		}
-		return leaderboard;
-	}
+    function startVotingPeriod() external onlyOwner {
+        isVotingActive = true;
+    }
 
-	// get project id from project id string
-	function getProjectId(string memory projectId) public view returns (uint256) {
-		return projects[projectId];
-	}
+    function endVotingPeriod() external onlyOwner {
+        isVotingActive = false;
+    }
 
-	// get vote count for project
-	function getVoteCountForProject(uint256 projectId) public view returns (uint256 voteCount) {
-		for (uint256 i = 0; i < voters.length; i++) {
-			if (isNumInArr(projectId, votes[voters[i]])) {
-				voteCount++;
-			}
-		}
-		return voteCount;
-	}
+    function submitShowcaseData(
+        string[] memory projectIds
+    ) external onlyOwner votingNotActive {
+        for (uint16 i = 0; i < projectIds.length; i++) {
+            projectNameToId[projectIds[i]] = i;
+        }
+    }
 
+    function submitFinalists(
+        uint16[] memory _finalistIds
+    ) external onlyOwner votingNotActive {
+        for (uint256 i = 0; i < _finalistIds.length; i++) {
+            finalistIds.push(_finalistIds[i]);
+        }
+    }
+
+    //
+    // internal
+    //
+
+    function isNumDouble(uint16[] memory arr) internal pure returns (bool) {
+        for (uint i = 0; i < arr.length; i++) {
+            for (uint j = 0; j < arr.length; j++) {
+                if (arr[i] == arr[j] && i != j) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    function isNumInArr(
+        uint16 num,
+        uint16[] memory arr
+    ) internal pure returns (bool) {
+        for (uint i = 0; i < arr.length; i++) {
+            if (arr[i] == num) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
