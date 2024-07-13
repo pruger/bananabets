@@ -17,6 +17,25 @@
     },
     {
         "type": "function",
+        "name": "addrToName",
+        "inputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "string",
+                "internalType": "string"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
         "name": "addrToVote",
         "inputs": [
             {
@@ -38,13 +57,6 @@
             }
         ],
         "stateMutability": "view"
-    },
-    {
-        "type": "function",
-        "name": "endVotingPeriod",
-        "inputs": [],
-        "outputs": [],
-        "stateMutability": "nonpayable"
     },
     {
         "type": "function",
@@ -81,6 +93,11 @@
                         "internalType": "address"
                     },
                     {
+                        "name": "name",
+                        "type": "string",
+                        "internalType": "string"
+                    },
+                    {
                         "name": "points",
                         "type": "int256",
                         "internalType": "int256"
@@ -105,17 +122,24 @@
     },
     {
         "type": "function",
-        "name": "getVoteCountForProject",
-        "inputs": [
-            {
-                "name": "projectId",
-                "type": "uint16",
-                "internalType": "uint16"
-            }
-        ],
+        "name": "getVoteCountsForProjects",
+        "inputs": [],
         "outputs": [
             {
                 "name": "voteCount",
+                "type": "uint256[]",
+                "internalType": "uint256[]"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getVotersCount",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "count",
                 "type": "uint256",
                 "internalType": "uint256"
             }
@@ -202,6 +226,13 @@
     },
     {
         "type": "function",
+        "name": "stopVotingPeriod",
+        "inputs": [],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
         "name": "submitFinalists",
         "inputs": [
             {
@@ -254,6 +285,11 @@
                 "name": "message",
                 "type": "bytes",
                 "internalType": "bytes"
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "internalType": "string"
             }
         ],
         "outputs": [],

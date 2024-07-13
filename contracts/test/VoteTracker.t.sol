@@ -26,7 +26,7 @@ contract VoteTrackerTest is Test {
         uint8 v = 27;
         bytes32 hash = 0xe3657a49450cc2675d49a82cc79b82ecb9e839e14f85c1e00744d9c289cf58ae;
         bytes memory message = hex"000100020003";
-        tracker.submitVote(v, r, s, hash, message);
+        tracker.submitVote(v, r, s, hash, message, "qqwe");
     }
 
     function testSubmitShowcaseData() public {
@@ -62,7 +62,7 @@ contract VoteTrackerTest is Test {
         bytes32 hash = 0xffff7a49450cc2675d49a82cc79b82ecb9e839e14f85c1e00744d9c289cfffff;
         bytes memory message = hex"000100020003";
         vm.expectRevert();
-        tracker.submitVote(v, r, s, hash, message);
+        tracker.submitVote(v, r, s, hash, message, "kartik");
     }
 
     function testSubmitVote() public {
@@ -97,7 +97,11 @@ contract VoteTrackerTest is Test {
         VoteTracker.Leader[] memory leaderboardTest = tracker.getLeaderboard();
         console.log(leaderboardTest.length);
         console.log(leaderboardTest[0].addr);
+        console.log(leaderboardTest[0].name);
         assertEq(leaderboardTest[0].points, 18);
+        tracker.startVotingPeriod();
+        VoteTracker.Leader[] memory leaderboardTest2 = tracker.getLeaderboard();
+        assertEq(leaderboardTest2[0].points, 0);
     }
 
     function testOnlyOwner() public {

@@ -8,6 +8,7 @@ contract VoteTracker {
 
     address[] public voters;
     mapping(address => uint16[]) public addrToVote;
+    mapping(address => string) public addrToName;
     string[] public projectIdArr;
     uint16[] public finalistIds;
     bool public isVotingActive = false;
@@ -17,6 +18,7 @@ contract VoteTracker {
 
     struct Leader {
         address addr;
+        string name;
         int256 points;
     }
 
@@ -52,7 +54,8 @@ contract VoteTracker {
         bytes32 r,
         bytes32 s,
         bytes32 hash,
-        bytes calldata message
+        bytes calldata message,
+        string calldata name
     ) external votingActive {
         address sender;
         uint16[] memory addressToVote;
@@ -73,6 +76,7 @@ contract VoteTracker {
         }
         voters.push(sender);
         addrToVote[sender] = addressToVote;
+        addrToName[sender] = name;
     }
 
     function getLeaderboard()
@@ -83,11 +87,14 @@ contract VoteTracker {
         leaderboard = new Leader[](voters.length);
         for (uint256 i = 0; i < voters.length; i++) {
             leaderboard[i].addr = voters[i];
-            for (uint256 j = 0; j < addrToVote[voters[i]].length; j++) {
-                if (isNumInArr(addrToVote[voters[i]][j], finalistIds)) {
-                    leaderboard[i].points += positiveFactor;
-                } else {
-                    leaderboard[i].points += negativeFactor;
+            leaderboard[i].name = addrToName[voters[i]];
+            if (isVotingActive == false) {
+                for (uint256 j = 0; j < addrToVote[voters[i]].length; j++) {
+                    if (isNumInArr(addrToVote[voters[i]][j], finalistIds)) {
+                        leaderboard[i].points += positiveFactor;
+                    } else {
+                        leaderboard[i].points += negativeFactor;
+                    }
                 }
             }
         }
@@ -102,8 +109,11 @@ contract VoteTracker {
         return projectIdArr;
     }
 
-    function getVoteCountsForProjects(
-    ) external view returns (uint256[] memory voteCount) {
+    function getVoteCountsForProjects()
+        external
+        view
+        returns (uint256[] memory voteCount)
+    {
         voteCount = new uint256[](projectIdArr.length);
         for (uint16 i = 0; i < projectIdArr.length; i++) {
             for (uint256 j = 0; j < voters.length; j++) {

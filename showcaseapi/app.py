@@ -147,20 +147,36 @@ voteContract = w3.eth.contract(abi=abi, address=contractAddress)
 
 
 @app.post("/send-transaction")
-async def send_transaction(v: int, r: str, s: str, hash: str, votes: str):
-    bytes_votes = bytes.fromhex(votes)
-    transaction = voteContract.functions.submitVote(
-        v, r, s, hash, bytes_votes
-    ).build_transaction(
-        {
-            "from": account.address,
-            "nonce": w3.eth.get_transaction_count(account.address),
-        }
-    )
-    signed_transaction = account.sign_transaction(transaction)
+async def send_transaction(v: int, r: str, s: str, hash: str, votes: str, name: str):
+    if len(name) > 30:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Name longer than 30 characters",
+        ) 
+    if len(votes) > 200:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="More than 50 votes",
+        )  
+    try:
+        bytes_votes = bytes.fromhex(votes)
+        transaction = voteContract.functions.submitVote(
+            v, r, s, hash, bytes_votes, name
+        ).build_transaction(
+            {
+                "from": account.address,
+                "nonce": w3.eth.get_transaction_count(account.address),
+            }
+        )
+        signed_transaction = account.sign_transaction(transaction)
 
-    tx_hash = w3.eth.send_raw_transaction(signed_transaction.rawTransaction)
-    return JSONResponse({"tx": tx_hash.hex()})
+        tx_hash = w3.eth.send_raw_transaction(signed_transaction.rawTransaction)
+        return JSONResponse({"tx": tx_hash.hex()})
+    except Exception as err:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(err),
+        )        
 
 
 def raiseOnWrongSecret(secret):

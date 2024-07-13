@@ -15,6 +15,6 @@ contract SubmitProjectsScript is Script {
         bytes32 hash = 0xe3657a49450cc2675d49a82cc79b82ecb9e839e14f85c1e00744d9c289cf58ae;
         bytes memory message = hex"000100020003";
         vm.broadcast();
-        tracker.submitVote(v, r, s, hash, message);
+        tracker.submitVote(v, r, s, hash, message, "qqqwe");
     }
 }
