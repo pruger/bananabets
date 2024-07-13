@@ -104,7 +104,10 @@ export default function Home() {
           },
         }
       );
-      console.log(res);
+
+    console.log(
+      `https://nfc.ethglobal.com?pk1=${res["data"]["publicKey:1"].toUpperCase()}&latch1=${res["data"]["latchValue:1"].toUpperCase()}`,
+    );
     // console.log(selectedProjects.map((val) => projectIds[val]));
     // try {
     //   await execHaloCmdWeb(
@@ -164,7 +167,9 @@ export default function Home() {
         onChange={(e) => {
           setSearchedProjects(
             e.target.value !== ""
-              ? projects.filter((p) => p.name.includes(e.target.value))
+              ? projects.filter((p) =>
+                  p.name.toLowerCase().includes(e.target.value.toLowerCase()),
+                )
               : projects,
           );
         }}
