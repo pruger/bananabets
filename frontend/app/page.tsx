@@ -12,6 +12,9 @@ import {
   Checkbox,
   Image,
 } from "@nextui-org/react";
+// @ts-ignore
+import { execHaloCmdWeb } from "@arx-research/libhalo/api/web.js";
+import { toast } from "react-toastify";
 
 import { siteConfig } from "@/config/site";
 import { title } from "@/components/primitives";
@@ -72,10 +75,48 @@ export default function Home() {
     })();
   }, []);
 
+  const onSubmit = async () => {
+    try {
+      await execHaloCmdWeb({
+          name: "sign",
+          keyNo: 1,
+          message: "000100020003",
+          // legacySignCommand: true,
+        },
+        {
+          statusCallback: (cause: string) => {
+            if (cause === "init") {
+              toast.info(
+                "Please tap the tag to the back of your smartphone and hold it...",
+              );
+            } else if (cause === "retry") {
+              toast.warning(
+                "Something went wrong, please try to tap the tag again...",
+              );
+            } else if (cause === "scanned") {
+              toast.success(
+                "Tag scanned successfully, post-processing the result...",
+              );
+            } else {
+              toast.error("An error occurred, please try again...");
+            }
+          },
+        },
+      );
+    } catch (err) {
+      toast.error("An error occurred, please try again...");
+    }
+  };
+
   return (
     <section className="flex flex-col items-center justify-center h-full gap-4">
       <div className="absolute bottom-0 left-0 flex w-full items-center justify-center z-50 p-4 bg-gradient-to-t from-green-500">
-        <Button className="w-full cursor-pointer" color="primary" size="md">
+        <Button
+          className="w-full cursor-pointer"
+          color="primary"
+          size="md"
+          onClick={onSubmit}
+        >
           Submit - {selectedProjects.length} / 10
         </Button>
       </div>
