@@ -166,6 +166,7 @@ export default function Home() {
         );
       }
     } catch (e) {
+      setNameModal(false);
       toast.error(
         "An error occurred, please check if the voting is still open...",
       );
