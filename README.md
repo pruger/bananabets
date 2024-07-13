@@ -2,7 +2,7 @@
 
 THIS PROJECT IS ONLY USABLE ON MOBILE.
 
-Betting plattform where ETHGlobal attendees can forecast potential hackathon finalists using showcase data.
+Betting platform where ETHGlobal attendees can forecast hackathon finalists based on showcase data and sign in with their NFC wristbands for frictionless onboarding.
 
 ## ⁉️ Description
 We discovered that project submissions on ethglobal.com/showcase are accessible before the finalists are announced. Leveraging this insight, we created a platform for ETHGlobal Brussels attendees to bet on which projects will become finalists prior to the winner ceremony.
