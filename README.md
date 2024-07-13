@@ -14,6 +14,6 @@ Attendees can easily join by scanning their NFC wristbands and betting transacti
 
 - **Solidity** smart contract to store bets and points.
 
-- **Node** backend to verify NFC signatures, interact with the smart contract, and fetch projects from the showcase.
+- **Node backend to verify NFC signatures, interact with the smart contract, and fetch projects from the showcase.
 
 ![stuff Logo](./img/project_chart.png)
