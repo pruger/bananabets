@@ -1,6 +1,6 @@
 # Ethglob Voting System
 
-Ethglob Voting System is a web application designed to engage Ethglob participants in predicting the finalists out of all the competing teams. The system rewards the top predictor with 100 USDC, adding an exciting and competitive edge to the event.
+Prediction market where ETHGlobal attendees can forecast potential hackathon finalists using showcase data.
 
 ## ⁉️ Description
 We discovered that project submissions on ethglobal.com/showcase are accessible before the finalists are announced. Leveraging this insight, we created a platform for ETHGlobal Brussels attendees to bet on which projects will become finalists prior to the winner ceremony.
