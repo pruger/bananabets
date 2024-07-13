@@ -15,7 +15,9 @@ import abi from "@/public/abi.json";
 const CONTRACT_ADDRESS = "0x581aE9cD8e6AFfF77f1D45aF5274f3a2C1D8644d";
 
 export default function Leaderboard() {
-  const [leaderboard, setLeaderboard] = useState<[string, number][]>([]);
+  const [leaderboard, setLeaderboard] = useState<[string, string, number][]>(
+    [],
+  );
 
   const provider = new ethers.JsonRpcProvider(
     "https://jenkins.rpc.caldera.xyz/http",
@@ -27,23 +29,19 @@ export default function Leaderboard() {
       const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, provider);
       let result = await contract.getLeaderboard();
 
-      result = result.reduce((acc: any, [key, value]: [number, any]) => {
-        acc[key] = Number(value);
-
-        return acc;
-      }, {});
-
-      console.log(result);
-
       setLeaderboard(
-        (Object.entries(result) as [string, number][]).sort(
-          ([, a], [, b]) => b - a,
-        ) as [string, number][],
+        result.sort((a: any, b: any) => {
+          const lastItemA = a[a.length - 1];
+          const lastItemB = b[b.length - 1];
+
+          if (lastItemA > lastItemB) return -1;
+          if (lastItemA < lastItemB) return 1;
+
+          return 0;
+        }) as [string, string, number][],
       );
     })();
   }, []);
-
-  console.log(leaderboard);
 
   return (
     <>
@@ -51,18 +49,20 @@ export default function Leaderboard() {
         <TableHeader>
           <TableColumn>{""}</TableColumn>
           <TableColumn>Points</TableColumn>
+          <TableColumn>Username</TableColumn>
           <TableColumn>Wristband Address</TableColumn>
         </TableHeader>
         <TableBody>
-          {leaderboard.map(([address, points]: [string, number]) => (
+          {leaderboard.map(([address, name, points]: [string, string, number]) => (
             <TableRow key={address}>
               <TableCell>
                 <Avatar
-                  name={address}
-                  src={`https://effigy.im/a/${address}.png`}
+                    name={address}
+                    src={`https://effigy.im/a/${address}.png`}
                 />
               </TableCell>
               <TableCell>{points.toString()}</TableCell>
+              <TableCell>{name}</TableCell>
               <TableCell>{address}</TableCell>
             </TableRow>
           ))}
