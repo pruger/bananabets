@@ -54,21 +54,10 @@ export default function RootLayout({
           id="apeBackground"
         />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          {/* <MobileOnlyApp> */}
-          <Navbar />
-          <main className="w-full h-full">{children}</main>
-              {/* <footer className="w-full flex items-center justify-center py-3">
-                <Link
-                  isExternal
-                  className="flex items-center gap-1 text-current"
-                  href="https://ethglobal.com/brussels"
-                  title="ethglobal brussels page"
-                >
-                  <span className="text-default-600">Made for</span>
-                  <p className="text-primary">ETHGlobal Brussels</p>
-                </Link>
-              </footer> */}
-          {/* </MobileOnlyApp> */}
+          <MobileOnlyApp>
+            <Navbar />
+            <main className="w-full h-full">{children}</main>
+          </MobileOnlyApp>
           <ToastContainer />
         </Providers>
       </body>
