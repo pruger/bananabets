@@ -87,6 +87,8 @@ export default function Home() {
       const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, provider);
       const result = await contract.getProjectIds();
 
+      console.log(result);
+
       setProjectIds(
         result.reduce((acc: any, curr: any, index: any) => {
           acc[curr] = index;

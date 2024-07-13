@@ -30,6 +30,9 @@ export default function Leaderboard() {
       const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, provider);
       let result = await contract.getLeaderboard();
 
+      if (Object.isFrozen(result)) {
+        result = [...result];
+      }
       setLeaderboard(
         result.sort((a: any, b: any) => {
           const lastItemA = a[a.length - 1];
