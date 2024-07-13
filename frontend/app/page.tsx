@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "@nextui-org/input";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import {
@@ -74,6 +74,8 @@ export default function Home() {
 
   const [nameModal, setNameModal] = useState(false);
   const [username, setUsername] = useState("");
+
+  const modalBodyRef = useRef(null);
 
   const provider = new ethers.JsonRpcProvider(
     "https://jenkins.rpc.caldera.xyz/http",
@@ -173,6 +175,21 @@ export default function Home() {
     setScanLoading(false);
   };
 
+  useEffect(() => {
+    if (modalBodyRef.current) {
+      const inputs = modalBodyRef.current.querySelectorAll(
+        'input, textarea, select',
+      );
+      inputs.forEach((input) => {
+        input.addEventListener('focus', () => {
+          setTimeout(() => {
+            input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 300);
+        });
+      });
+    }
+  }, [nameModal]);
+
   return (
     <section className="flex flex-col items-center justify-center h-full">
       <Modal
@@ -181,13 +198,15 @@ export default function Home() {
         isKeyboardDismissDisabled={true}
         isOpen={nameModal}
         placement="auto"
+        scrollBehavior="outside"
         size="2xl"
       >
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">
             Enter Username
           </ModalHeader>
-          <ModalBody>
+          {/* // @ts-ignore */}
+          <ModalBody ref={modalBodyRef}>
             <Input
               label="Username"
               type="username"
