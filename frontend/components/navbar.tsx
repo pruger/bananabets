@@ -6,7 +6,7 @@ import { siteConfig } from "@/config/site";
 
 const Navbar: React.FC = () => {
   return (
-    <div className="flex flex-col justify-center items-center w-full m-3">
+    <div className="flex flex-col justify-center items-center m-3">
       <div className="inline-block max-w-lg text-center">
         <h1 className={title({ color: "violet" })}>{siteConfig.name}</h1>
         <br />

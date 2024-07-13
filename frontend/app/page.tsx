@@ -9,9 +9,7 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
-  Checkbox,
   Image,
-  Link,
 } from "@nextui-org/react";
 // @ts-ignore
 import { execHaloCmdWeb } from "@arx-research/libhalo/api/web.js";
@@ -19,9 +17,8 @@ import { toast } from "react-toastify";
 import { ethers } from "ethers";
 
 import abi from "@/public/abi.json";
-
+const CONTRACT_ADDRESS = "0x003FE86d541a2EC57992242c1567eb43C60451fE";
 const API_HOST = "https://predictionmarketapi.cleartxn.xyz";
-const CONTRACT_ADDRESS = "0xf7aDef4252fbba21ba8274E02cceB9F25f4f6FE4";
 
 interface ProjectTileProps {
   title: string;
@@ -68,8 +65,7 @@ export default function Home() {
   const [searchedProjects, setSearchedProjects] = useState<string[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [projectIds, setProjectIds] = useState<{ [key: string]: number }>({});
-
-  console.log(selectedProjects);
+  const [scanLoading, setScanLoading] = useState(false);
 
   const provider = new ethers.JsonRpcProvider(
     "https://jenkins.rpc.caldera.xyz/http",
@@ -111,52 +107,61 @@ export default function Home() {
     //   `https://nfc.ethglobal.com?pk1=${res["data"]["publicKey:1"].toUpperCase()}&latch1=${res["data"]["latchValue:1"].toUpperCase()}`,
     // );
 
-    const votedIds = selectedProjects.map((val) => projectIds[val]);
-    const signResult = await execHaloCmdWeb(
-      {
-        name: "sign",
-        keyNo: 1,
-        message: votedIds.map((id) => id.toString().padStart(4, "0")).join(""),
-      },
-      {
-        statusCallback: (cause: string) => {
-          if (cause === "init") {
-            toast.info(
-              "Please tap the tag to the back of your smartphone and hold it...",
-            );
-          } else if (cause === "retry") {
-            toast.warning(
-              "Something went wrong, please try to tap the tag again...",
-            );
-          } else if (cause === "scanned") {
-            toast.success(
-              "Tag scanned successfully, post-processing the result...",
-            );
-          } else {
-            toast.error("An error occurred, please try again...");
-          }
+    try {
+      setScanLoading(true);
+      const votedIds = selectedProjects.map((val) => projectIds[val]);
+      const signResult = await execHaloCmdWeb(
+        {
+          name: "sign",
+          keyNo: 1,
+          message: votedIds
+            .map((id) => id.toString(16).padStart(4, "0"))
+            .join(""),
         },
-      },
-    );
-    const apiResult = await fetch(
-      `${API_HOST}/send-transaction?` +
-        new URLSearchParams({
-          v: signResult.signature.raw.v,
-          r: `0x${signResult.signature.raw.r}`,
-          s: `0x${signResult.signature.raw.s}`,
-          hash: `0x${signResult.input.digest}`,
-          votes: signResult.input.message,
-        }).toString(),
-      { method: "POST" },
-    );
+        {
+          statusCallback: (cause: string) => {
+            if (cause === "init") {
+              toast.info(
+                "Please tap the tag to the back of your smartphone and hold it...",
+              );
+            } else if (cause === "retry") {
+              toast.warning(
+                "Something went wrong, please try to tap the tag again...",
+              );
+            } else if (cause === "scanned") {
+              toast.success(
+                "Tag scanned successfully, post-processing the result...",
+              );
+            }
+          },
+        },
+      );
 
-    if (apiResult.status == 200) {
-      toast.success("Transaction sent successfully!");
-    } else {
+      const apiResult = await fetch(
+        `${API_HOST}/send-transaction?` +
+          new URLSearchParams({
+            v: signResult.signature.raw.v,
+            r: `0x${signResult.signature.raw.r}`,
+            s: `0x${signResult.signature.raw.s}`,
+            hash: `0x${signResult.input.digest}`,
+            votes: signResult.input.message,
+          }).toString(),
+        { method: "POST" },
+      );
+
+      if (apiResult.status == 200) {
+        toast.success("Transaction sent successfully!");
+      } else {
+        toast.error(
+          "An error occurred, please check if the voting is still open...",
+        );
+      }
+    } catch (e) {
       toast.error(
         "An error occurred, please check if the voting is still open...",
       );
     }
+    setScanLoading(false);
   };
 
   return (
@@ -199,6 +204,8 @@ export default function Home() {
         <Button
           className="w-full cursor-pointer"
           color="primary"
+          isDisabled={selectedProjects.length === 0}
+          isLoading={scanLoading}
           size="md"
           onClick={onSubmit}
         >
