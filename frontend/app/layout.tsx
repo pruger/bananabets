@@ -11,6 +11,7 @@ import { ToastContainer } from "react-toastify";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import MobileOnlyApp from "@/components/mobileOnly";
+import Navbar from "@/components/navbar";
 
 export const metadata: Metadata = {
   title: {
@@ -46,8 +47,8 @@ export default function RootLayout({
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           {/* <MobileOnlyApp> */}
-            <div className="relative flex flex-col h-screen justify-between gap-3">
-              <main className="container mx-auto h-full">{children}</main>
+          <Navbar />
+          <main className="w-full h-full">{children}</main>
               {/* <footer className="w-full flex items-center justify-center py-3">
                 <Link
                   isExternal
@@ -59,7 +60,6 @@ export default function RootLayout({
                   <p className="text-primary">ETHGlobal Brussels</p>
                 </Link>
               </footer> */}
-            </div>
           {/* </MobileOnlyApp> */}
           <ToastContainer />
         </Providers>

@@ -7,20 +7,21 @@ import {
   Button,
   Card,
   CardBody,
+  CardFooter,
   CardHeader,
   Checkbox,
   Image,
+  Link,
 } from "@nextui-org/react";
 // @ts-ignore
 import { execHaloCmdWeb } from "@arx-research/libhalo/api/web.js";
 import { toast } from "react-toastify";
 import { ethers } from "ethers";
 
-import { siteConfig } from "@/config/site";
-import { title } from "@/components/primitives";
 import abi from "@/public/abi.json";
 
 const API_HOST = "https://predictionmarketapi.cleartxn.xyz";
+const CONTRACT_ADDRESS = "0xf7aDef4252fbba21ba8274E02cceB9F25f4f6FE4";
 
 interface ProjectTileProps {
   title: string;
@@ -46,15 +47,19 @@ const ProjectTile: React.FC<ProjectTileProps> = ({
         style={{ objectFit: "cover", height: "150px", maxHeight: "150px" }}
       />
     </CardHeader>
-    <CardBody className="overflow-visible py-2">
+    <CardBody className="text-ellipsis text-wrap max-h-28">
       <h4 className="font-bold text-large">{title}</h4>
       <small className="text-default-500">{description}</small>
-      <div className="flex items-center justify-center">
-        <Checkbox isSelected={selected} onChange={onSelect}>
-          Finalist?
-        </Checkbox>
-      </div>
     </CardBody>
+    <CardFooter>
+      <Button
+        className="w-full"
+        color={selected ? "success" : "primary"}
+        onClick={onSelect}
+      >
+        {selected ? "Selected as Finalist" : "Select as Finalist"}
+      </Button>
+    </CardFooter>
   </Card>
 );
 
@@ -64,6 +69,8 @@ export default function Home() {
   const [projects, setProjects] = useState<any[]>([]);
   const [projectIds, setProjectIds] = useState<{ [key: string]: number }>({});
 
+  console.log(selectedProjects);
+
   const provider = new ethers.JsonRpcProvider(
     "https://jenkins.rpc.caldera.xyz/http",
     1798,
@@ -72,11 +79,7 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       const res = await fetch(`${API_HOST}/projects`).then((res) => res.json());
-      const contract = new ethers.Contract(
-        "0xf7aDef4252fbba21ba8274E02cceB9F25f4f6FE4",
-        abi,
-        provider,
-      );
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, provider);
       const result = await contract.getProjectIds();
 
       setProjectIds(
@@ -157,26 +160,10 @@ export default function Home() {
   };
 
   return (
-    <section className="flex flex-col items-center justify-center h-full gap-4">
-      <div className="absolute bottom-0 left-0 flex w-full items-center justify-center z-50 p-4 bg-gradient-to-t from-white">
-        <Button
-          className="w-full cursor-pointer"
-          color="primary"
-          size="md"
-          onClick={onSubmit}
-        >
-          Sign And Submit
-        </Button>
-      </div>
-      <div className="flex justify-center items-center w-full">
-        <div className="inline-block max-w-lg text-center">
-          <h1 className={title({ color: "violet" })}>{siteConfig.name}</h1>
-          <br />
-          <span>websites regardless of your design experience.</span>
-        </div>
-      </div>
+    <section className="flex flex-col items-center justify-center h-full">
       <Input
         isClearable
+        className="p-4"
         placeholder="Search..."
         startContent={<MagnifyingGlassIcon className="w-5 h-5" />}
         onChange={(e) => {
@@ -207,6 +194,16 @@ export default function Home() {
             }}
           />
         ))}
+      </div>
+      <div className="fixed bottom-0 left-0 flex w-full items-center justify-center z-50 p-4 bg-gradient-to-t from-gray-800">
+        <Button
+          className="w-full cursor-pointer"
+          color="primary"
+          size="md"
+          onClick={onSubmit}
+        >
+          Sign And Submit
+        </Button>
       </div>
     </section>
   );
