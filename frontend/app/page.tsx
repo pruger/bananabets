@@ -15,6 +15,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Spinner,
 } from "@nextui-org/react";
 // @ts-ignore
 import { execHaloCmdWeb } from "@arx-research/libhalo/api/web.js";
@@ -225,7 +226,8 @@ export default function Home() {
         }}
         onClear={() => setSearchedProjects(projects)}
       />
-      <div className="flex gap-4 h-full flex-wrap overflow-y-scroll justify-center px-5 pt-5 pb-20">
+      {searchedProjects.length !== 0 && (
+        <div className="flex gap-4 h-full flex-wrap overflow-y-scroll justify-center px-5 pt-5 pb-20">
         {searchedProjects.map((project: any) => (
           <ProjectTile
             key={project.id}
@@ -242,7 +244,11 @@ export default function Home() {
             }}
           />
         ))}
-      </div>
+        </div>
+      )}
+      {searchedProjects.length === 0 && (
+        <Spinner className="w-10 h-10" color="primary" />
+      )}
       <div className="fixed bottom-0 left-0 flex w-full items-center justify-center z-50 p-4 bg-gradient-to-t from-gray-800">
         <Button
           className="w-full cursor-pointer"

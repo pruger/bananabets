@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import activate_apemode_gif from "@/public/activate_apemode.gif";
 import activate_apemode from "@/public/activate_apemode.png";
 
-
 const Navbar: React.FC = () => {
   const [startApemode, setStartApemode] = useState(false);
   const [raindropTimeout, setRaindropTimeout] =
@@ -68,7 +67,7 @@ const Navbar: React.FC = () => {
         Your browser does not support the audio element.
       </audio>
       <Image
-        alt="GorillaGamble"
+        alt="apemodeimage"
         className="object-cover rounded-xl cursor-pointer"
         src={startApemode ? activate_apemode_gif : activate_apemode}
         width={450}

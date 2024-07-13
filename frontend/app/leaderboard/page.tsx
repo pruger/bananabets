@@ -1,6 +1,7 @@
 "use client";
 import {
   Avatar,
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -45,7 +46,7 @@ export default function Leaderboard() {
 
   return (
     <>
-      <Table aria-label="Leaderboard" className="p-8">
+      {leaderboard.length !== 0 && (<Table aria-label="Leaderboard" className="p-8">
         <TableHeader>
           <TableColumn>{""}</TableColumn>
           <TableColumn>Points</TableColumn>
@@ -67,7 +68,12 @@ export default function Leaderboard() {
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+      </Table>)}
+      {leaderboard.length === 0 && (
+        <div className="flex w-full h-full items-center justify-center">
+            <Spinner className="w-10 h-10" color="primary" />
+        </div>
+      )}
     </>
   );
 }
