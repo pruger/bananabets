@@ -106,48 +106,55 @@ export default function Home() {
     //   `https://nfc.ethglobal.com?pk1=${res["data"]["publicKey:1"].toUpperCase()}&latch1=${res["data"]["latchValue:1"].toUpperCase()}`,
     // );
 
-    const votedIds = selectedProjects.map((val) => projectIds[val]);
-    const signResult = await execHaloCmdWeb(
-      {
-        name: "sign",
-        keyNo: 1,
-        message: votedIds.map((id) => id.toString().padStart(4, "0")).join(""),
-      },
-      {
-        statusCallback: (cause: string) => {
-          if (cause === "init") {
-            toast.info(
-              "Please tap the tag to the back of your smartphone and hold it...",
-            );
-          } else if (cause === "retry") {
-            toast.warning(
-              "Something went wrong, please try to tap the tag again...",
-            );
-          } else if (cause === "scanned") {
-            toast.success(
-              "Tag scanned successfully, post-processing the result...",
-            );
-          } else {
-            toast.error("An error occurred, please try again...");
-          }
+    try {
+      const votedIds = selectedProjects.map((val) => projectIds[val]);
+      const signResult = await execHaloCmdWeb(
+        {
+          name: "sign",
+          keyNo: 1,
+          message: votedIds
+            .map((id) => id.toString().padStart(4, "0"))
+            .join(""),
         },
-      },
-    );
-    const apiResult = await fetch(
-      `${API_HOST}/send-transaction?` +
-        new URLSearchParams({
-          v: signResult.signature.raw.v,
-          r: `0x${signResult.signature.raw.r}`,
-          s: `0x${signResult.signature.raw.s}`,
-          hash: `0x${signResult.input.digest}`,
-          votes: signResult.input.message,
-        }).toString(),
-      { method: "POST" },
-    );
+        {
+          statusCallback: (cause: string) => {
+            if (cause === "init") {
+              toast.info(
+                "Please tap the tag to the back of your smartphone and hold it...",
+              );
+            } else if (cause === "retry") {
+              toast.warning(
+                "Something went wrong, please try to tap the tag again...",
+              );
+            } else if (cause === "scanned") {
+              toast.success(
+                "Tag scanned successfully, post-processing the result...",
+              );
+            }
+          },
+        },
+      );
 
-    if (apiResult.status == 200) {
-      toast.success("Transaction sent successfully!");
-    } else {
+      const apiResult = await fetch(
+        `${API_HOST}/send-transaction?` +
+          new URLSearchParams({
+            v: signResult.signature.raw.v,
+            r: `0x${signResult.signature.raw.r}`,
+            s: `0x${signResult.signature.raw.s}`,
+            hash: `0x${signResult.input.digest}`,
+            votes: signResult.input.message,
+          }).toString(),
+        { method: "POST" },
+      );
+
+      if (apiResult.status == 200) {
+        toast.success("Transaction sent successfully!");
+      } else {
+        toast.error(
+          "An error occurred, please check if the voting is still open...",
+        );
+      }
+    } catch (e) {
       toast.error(
         "An error occurred, please check if the voting is still open...",
       );
