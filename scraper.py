@@ -4,6 +4,7 @@ import json
 
 BASE_URL = "https://ethglobal.com"
 EVENT = "eventname"
+FINALIST_IMAGE_PART = "ethglobal_square_padding.png" 
 
 def scrape_projects():
     projects = []
@@ -37,12 +38,20 @@ def scrape_projects():
                 image = a.find('img', alt='cover photo')['src']
                 winner = a.find('img', alt='trophy') is not None
                 
+                # Check for finalist trophy image URL pattern matching
+                finalist = False
+                for img in a.find_all('img', alt='trophy'):
+                    if FINALIST_IMAGE_PART in img['src']:
+                        finalist = True
+                        break
+                
                 projects.append({
                     "name": name,
                     "description": description,
                     "link": link,
                     "image": image,
-                    "winner": winner
+                    "winner": winner,
+                    "finalist": finalist
                 })
             except AttributeError as e:
                 print(f"Error parsing project card: {e}")
