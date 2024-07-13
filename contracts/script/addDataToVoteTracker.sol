@@ -5,7 +5,7 @@ import {console} from "forge-std/Test.sol";
 import {VoteTracker} from "../src/VoteTracker.sol";
 
 contract VoteTrackerScript is Script {
-	address public trackerAddr = address(0xf7aDef4252fbba21ba8274E02cceB9F25f4f6FE4);
+	address public trackerAddr = address(0x16874474A584D7a9B2c32B3Dc9134c493DB635eD);
 	string[] public projectIdsTest = [
 		"project0",
 		"project1",
