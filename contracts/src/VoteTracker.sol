@@ -22,14 +22,14 @@ contract VoteTracker {
 
     address private _owner;
     constructor(int256 _positiveFactor, int256 _negativeFactor) {
-		positiveFactor = _positiveFactor;
-		negativeFactor = _negativeFactor;
+        positiveFactor = _positiveFactor;
+        negativeFactor = _negativeFactor;
         _owner = msg.sender;
         messageValidator = new MessageValidator();
     }
 
     modifier onlyOwner() {
-        // require(msg.sender == _owner);
+        require(msg.sender == _owner);
         _;
     }
 
@@ -53,7 +53,7 @@ contract VoteTracker {
         bytes32 s,
         bytes32 hash,
         bytes calldata message
-    ) external {
+    ) external votingActive {
         address sender;
         uint16[] memory addressToVote;
         (sender, addressToVote) = messageValidator.validateAndExtractData(
@@ -63,11 +63,16 @@ contract VoteTracker {
             hash,
             message
         );
-		if (isNumDouble(addressToVote)) {
+        for (uint256 i = 0; i < voters.length; i++) {
+            if (voters[i] == sender) {
+                revert("Sender already voted");
+            }
+        }
+        if (isNumDouble(addressToVote)) {
             revert("Duplicate addressToVote");
         }
-		voters.push(sender);
-		addrToVote[sender] = addressToVote;
+        voters.push(sender);
+        addrToVote[sender] = addressToVote;
     }
 
     function getLeaderboard()
@@ -89,20 +94,29 @@ contract VoteTracker {
         return leaderboard;
     }
 
-    function getProjectIds(
-    ) external view returns (string[] memory projectIds) {
+    function getProjectIds()
+        external
+        view
+        returns (string[] memory projectIds)
+    {
         return projectIdArr;
     }
 
-    function getVoteCountForProject(
-        uint16 projectId
-    ) external view returns (uint256 voteCount) {
-        for (uint256 i = 0; i < voters.length; i++) {
-            if (isNumInArr(projectId, addrToVote[voters[i]])) {
-                voteCount++;
+    function getVoteCountsForProjects(
+    ) external view returns (uint256[] memory voteCount) {
+        voteCount = new uint256[](projectIdArr.length);
+        for (uint16 i = 0; i < projectIdArr.length; i++) {
+            for (uint256 j = 0; j < voters.length; j++) {
+                if (isNumInArr(i, addrToVote[voters[j]])) {
+                    voteCount[i]++;
+                }
             }
         }
         return voteCount;
+    }
+
+    function getVotersCount() public view returns (uint count) {
+        return voters.length;
     }
 
     //
@@ -113,7 +127,7 @@ contract VoteTracker {
         isVotingActive = true;
     }
 
-    function endVotingPeriod() external onlyOwner votingActive {
+    function stopVotingPeriod() external onlyOwner votingActive {
         isVotingActive = false;
     }
 

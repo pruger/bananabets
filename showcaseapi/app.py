@@ -1,3 +1,5 @@
+from typing import List
+from pydantic import BaseModel
 import requests
 from bs4 import BeautifulSoup
 import json
@@ -12,7 +14,7 @@ from fastapi_cache.backends.inmemory import InMemoryBackend
 from fastapi_cache.decorator import cache
 
 BASE_URL = "https://ethglobal.com"
-EVENT = "eventname"
+EVENT = "sydney"
 FINALIST_IMAGE_PART = "ethglobal_square_padding.png"  # Finalist trophy
 NEXT_IMAGE_BASE_URL = "https://ethglobal.com"  # Base URL for the next/image srcset URLs
 
@@ -141,12 +143,12 @@ with open("ape-abi.json", "r") as f:
 contractAddress = os.environ.get("CONTRACT_ADDRESS")
 if not contractAddress:
     raise Exception("please provide a CONTRACT_ADDRESS")
+voteContract = w3.eth.contract(abi=abi, address=contractAddress)
 
 
 @app.post("/send-transaction")
 async def send_transaction(v: int, r: str, s: str, hash: str, votes: str):
     bytes_votes = bytes.fromhex(votes)
-    voteContract = w3.eth.contract(abi=abi, address=contractAddress)
     transaction = voteContract.functions.submitVote(
         v, r, s, hash, bytes_votes
     ).build_transaction(
@@ -158,23 +160,22 @@ async def send_transaction(v: int, r: str, s: str, hash: str, votes: str):
     signed_transaction = account.sign_transaction(transaction)
 
     tx_hash = w3.eth.send_raw_transaction(signed_transaction.rawTransaction)
-    print(tx_hash)
+    return JSONResponse({"tx": tx_hash.hex()})
+
+
+def raiseOnWrongSecret(secret):
+    if secret != os.environ.get("SECRET"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Forbidden: Your password is wrong you monkey",
+        )
+
+@app.get("/get-project-ids")
+async def vote(secret: str):
+    raiseOnWrongSecret(secret)
     projects = await get_projects()
-    return JSONResponse(content=projects)
-
-
-# @app.post("/submit-projects")
-# async def vote():
-#     pass
-
-# @app.post("/finish-voting")
-# async def send_transaction(secret: str, asd: int):
-#     if secret != "deadbeef1337qqqwe":
-#         raise HTTPException(
-#             status_code=status.HTTP_403_FORBIDDEN,
-#             detail="Forbidden: Your password is wrong you monkey"
-#         )
-#     return JSONResponse()
+    projects = [p["id"] for p in projects]
+    return JSONResponse({"projects": projects})
 
 if __name__ == "__main__":
     import uvicorn
