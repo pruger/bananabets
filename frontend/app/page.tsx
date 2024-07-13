@@ -75,8 +75,6 @@ export default function Home() {
   const [nameModal, setNameModal] = useState(false);
   const [username, setUsername] = useState("");
 
-  const modalBodyRef = useRef<HTMLElement | null>(null);
-
   const provider = new ethers.JsonRpcProvider(
     "https://jenkins.rpc.caldera.xyz/http",
     1798,
@@ -175,21 +173,6 @@ export default function Home() {
     setScanLoading(false);
   };
 
-  useEffect(() => {
-    if (modalBodyRef.current) {
-      const inputs = modalBodyRef.current.querySelectorAll(
-        'input, textarea, select',
-      );
-      inputs.forEach((input) => {
-        input.addEventListener('focus', () => {
-          setTimeout(() => {
-            input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }, 300);
-        });
-      });
-    }
-  }, [nameModal]);
-
   return (
     <section className="flex flex-col items-center justify-center h-full">
       <Modal
@@ -197,7 +180,7 @@ export default function Home() {
         isDismissable={false}
         isKeyboardDismissDisabled={true}
         isOpen={nameModal}
-        placement="auto"
+        placement="center"
         scrollBehavior="outside"
         size="2xl"
       >
@@ -205,8 +188,7 @@ export default function Home() {
           <ModalHeader className="flex flex-col gap-1">
             Enter Username
           </ModalHeader>
-          {/* // @ts-ignore */}
-          <ModalBody ref={modalBodyRef}>
+          <ModalBody>
             <Input
               label="Username"
               type="username"
