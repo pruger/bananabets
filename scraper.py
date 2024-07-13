@@ -4,8 +4,8 @@ import json
 
 BASE_URL = "https://ethglobal.com"
 EVENT = "eventname"
-FINALIST_IMAGE_PART = "ethglobal_square_padding.png"  
-NEXT_IMAGE_BASE_URL = "https://ethglobal.com"
+FINALIST_IMAGE_PART = "ethglobal_square_padding.png"  # Finalist trophy
+NEXT_IMAGE_BASE_URL = "https://ethglobal.com"  # Base URL for the next/image srcset URLs
 
 def scrape_projects():
     projects = []
@@ -39,8 +39,16 @@ def scrape_projects():
                 image = a.find('img', alt='cover photo')['src']
                 winner = a.find('img', alt='trophy') is not None
 
-                trophy_images = [NEXT_IMAGE_BASE_URL + img['src'] for img in a.find_all('img', alt='trophy')]
+                # Extract and sanitize all trophy images
+                trophy_images = []
+                for img in a.find_all('img', alt='trophy'):
+                    img_src = img['src']
+                    if img_src.startswith('http'):
+                        trophy_images.append(img_src)
+                    else:
+                        trophy_images.append(NEXT_IMAGE_BASE_URL + img_src)
 
+                # Check for finalist trophy image URL pattern matching
                 finalist = any(FINALIST_IMAGE_PART in img_url for img_url in trophy_images)
                 
                 projects.append({
