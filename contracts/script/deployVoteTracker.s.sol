@@ -4,11 +4,10 @@ import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/Test.sol";
 import {VoteTracker} from "../src/VoteTracker.sol";
 
-contract VoteTrackerScript is Script {
+contract DeployScript is Script {
     function run() external {
-        vm.startBroadcast();
+        vm.broadcast();
         VoteTracker tracker = new VoteTracker(10, -5);
-        vm.stopBroadcast();
 
         console.log("MyContract deployed at:", address(tracker));
     }
