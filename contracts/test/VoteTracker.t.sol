@@ -62,8 +62,9 @@ contract VoteTrackerTest is Test {
         tracker.startVotingPeriod();
         vote();
 
-        assertEq(tracker.getVoteCountForProject(1), 1);
-        assertEq(tracker.getVoteCountForProject(0), 0);
+        uint256[] memory votes = tracker.getVoteCountsForProjects();
+        assertEq(votes[0], 0);
+        assertEq(votes[1], 1);
 
         uint16 testVotes = tracker.addrToVote(
             address(0x0d88350DCBa99a3089510432d7E1A5b89Dd9FD10), 1

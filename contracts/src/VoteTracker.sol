@@ -55,6 +55,11 @@ contract VoteTracker {
         bytes calldata message
     ) external votingActive {
         address sender;
+        for (uint256 i = 0; i < voters.length; i++) {
+            if (voters[i] == sender) {
+                revert("Sender already voted");
+            }
+        }
         uint16[] memory addressToVote;
         (sender, addressToVote) = messageValidator.validateAndExtractData(
             v,
@@ -97,12 +102,14 @@ contract VoteTracker {
         return projectIdArr;
     }
 
-    function getVoteCountForProject(
-        uint16 projectId
-    ) external view returns (uint256 voteCount) {
-        for (uint256 i = 0; i < voters.length; i++) {
-            if (isNumInArr(projectId, addrToVote[voters[i]])) {
-                voteCount++;
+    function getVoteCountsForProjects(
+    ) external view returns (uint256[] memory voteCount) {
+        voteCount = new uint256[](projectIdArr.length);
+        for (uint16 i = 0; i < projectIdArr.length; i++) {
+            for (uint256 j = 0; j < voters.length; j++) {
+                if (isNumInArr(i, addrToVote[voters[j]])) {
+                    voteCount[i]++;
+                }
             }
         }
         return voteCount;
