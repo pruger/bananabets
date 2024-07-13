@@ -9,11 +9,16 @@ Each bettor can cast a number of votes to bet on different projects they believe
 
 Attendees can easily join by scanning their NFC wristbands and betting transactions are signed directly by their NFC private keys.
 
-## How it's made
-- **Next.js** frontend for sign-ups and casting bets.
+## 📦 How it's made
+```mermaid
+graph TD
+  A[User] -->|Signs up / Casts bets| B[Next.js Frontend]
+  B -->|Sends data| C[Node Backend]
+  C -->|Interacts with| D[Solidity Smart Contract]
+  C -->|Verifies| E[NFC Signatures]
+  C -->|Fetches| F[Projects from Showcase]
+```
 
-- **Solidity** smart contract to store bets and points.
-
-- **Node backend to verify NFC signatures, interact with the smart contract, and fetch projects from the showcase.
+## 💻 Technical Preview
 
 ![stuff Logo](./img/project_chart.png)
