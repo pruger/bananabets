@@ -25,7 +25,7 @@ graph TD
 
 ![stuff Logo](./img/project_chart.png)
 
-## What happens under the hood
+## Explanation of the steps
 
 1. Our backend scrapes the ETHGlobal Brussels projects from the ETHGlobal showcase website.
 2. Backend assigns unique IDs to each project and submits all of the IDs in an array to our smart contract on the ApeChain testnet.
