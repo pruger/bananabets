@@ -68,7 +68,11 @@ def scrape_projects():
                 # Check for finalist trophy image URL pattern matching
                 finalist = any(FINALIST_IMAGE_PART in img_url for img_url in trophy_images)
                 
+                # Extract the id from the last 5 characters of the link
+                id = link[-5:]
+                
                 projects.append({
+                    "id": id,
                     "name": name,
                     "description": description,
                     "link": link,
@@ -97,7 +101,7 @@ async def get_projects():
         raise HTTPException(status_code=500, detail="Error scraping projects")
     return projects
 
-@app.get ("/")
+@app.get("/")
 def rindex():
     return {"message": "API Up and running"}
 
@@ -112,4 +116,4 @@ async def on_startup():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8989)
