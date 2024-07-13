@@ -28,7 +28,7 @@ export default function Leaderboard() {
       let result = await contract.getLeaderboard();
 
       result = result.reduce((acc: any, [key, value]: [number, any]) => {
-        acc[key] = value;
+        acc[key] = Number(value);
 
         return acc;
       }, {});
