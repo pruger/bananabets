@@ -113,7 +113,7 @@ export default function Home() {
           name: "sign",
           keyNo: 1,
           message: votedIds
-            .map((id) => id.toString().padStart(4, "0"))
+            .map((id) => id.toString(16).padStart(4, "0"))
             .join(""),
         },
         {
