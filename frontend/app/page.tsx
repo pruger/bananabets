@@ -136,17 +136,15 @@ export default function Home() {
         },
       },
     );
-    const apiResult = await fetch(`${API_HOST}/send-transaction`, {
-      method: "POST",
-      headers: { "Content-type": "application/json" },
-      body: JSON.stringify({
-        v: signResult.signature.raw.v,
-        r: signResult.signature.raw.r,
-        s: signResult.signature.raw.s,
-        hash: signResult.input.digest,
-        votes: signResult.input.message,
-      }),
-    });
+    const apiResult = await fetch(`${API_HOST}/send-transaction?` + new URLSearchParams({
+          v: signResult.signature.raw.v,
+          r: signResult.signature.raw.r,
+          s: signResult.signature.raw.s,
+          hash: signResult.input.digest,
+          votes: signResult.input.message,
+        }).toString(),
+      { method: "POST" },
+    );
     console.log(apiResult);
   };
 
