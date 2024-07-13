@@ -110,7 +110,7 @@ export default function Home() {
 
     // const votedIds = selectedProjects.map((val) => projectIds[val]);
     const votedIds = [10, 4, 5, 6];
-    const signCallResult = await execHaloCmdWeb(
+    const signResult = await execHaloCmdWeb(
       {
         name: "sign",
         keyNo: 1,
@@ -136,10 +136,6 @@ export default function Home() {
         },
       },
     );
-    const signResult = {
-      input: signCallResult["input"],
-      signature: signCallResult["signature"]["raw"],
-    };
     const apiResult = await fetch(`${API_HOST}/send-transaction`, {
       method: "POST",
       headers: { "Content-type": "application/json" },
