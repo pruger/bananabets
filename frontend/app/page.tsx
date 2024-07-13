@@ -108,8 +108,7 @@ export default function Home() {
     //   `https://nfc.ethglobal.com?pk1=${res["data"]["publicKey:1"].toUpperCase()}&latch1=${res["data"]["latchValue:1"].toUpperCase()}`,
     // );
 
-    // const votedIds = selectedProjects.map((val) => projectIds[val]);
-    const votedIds = [10, 4, 5, 6];
+    const votedIds = selectedProjects.map((val) => projectIds[val]);
     const signResult = await execHaloCmdWeb(
       {
         name: "sign",
@@ -147,7 +146,14 @@ export default function Home() {
         }).toString(),
       { method: "POST" },
     );
-    console.log(apiResult);
+
+    if (apiResult.status == 200) {
+      toast.success("Transaction sent successfully!");
+    } else {
+      toast.error(
+        "An error occurred, please check if the voting is still open...",
+      );
+    }
   };
 
   return (
