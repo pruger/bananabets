@@ -22,14 +22,14 @@ contract VoteTracker {
 
     address private _owner;
     constructor(int256 _positiveFactor, int256 _negativeFactor) {
-		positiveFactor = _positiveFactor;
-		negativeFactor = _negativeFactor;
+        positiveFactor = _positiveFactor;
+        negativeFactor = _negativeFactor;
         _owner = msg.sender;
         messageValidator = new MessageValidator();
     }
 
     modifier onlyOwner() {
-        // require(msg.sender == _owner);
+        require(msg.sender == _owner);
         _;
     }
 
@@ -53,7 +53,7 @@ contract VoteTracker {
         bytes32 s,
         bytes32 hash,
         bytes calldata message
-    ) external {
+    ) external votingActive {
         address sender;
         uint16[] memory addressToVote;
         (sender, addressToVote) = messageValidator.validateAndExtractData(
@@ -63,11 +63,11 @@ contract VoteTracker {
             hash,
             message
         );
-		if (isNumDouble(addressToVote)) {
+        if (isNumDouble(addressToVote)) {
             revert("Duplicate addressToVote");
         }
-		voters.push(sender);
-		addrToVote[sender] = addressToVote;
+        voters.push(sender);
+        addrToVote[sender] = addressToVote;
     }
 
     function getLeaderboard()
@@ -89,8 +89,11 @@ contract VoteTracker {
         return leaderboard;
     }
 
-    function getProjectIds(
-    ) external view returns (string[] memory projectIds) {
+    function getProjectIds()
+        external
+        view
+        returns (string[] memory projectIds)
+    {
         return projectIdArr;
     }
 
@@ -105,6 +108,10 @@ contract VoteTracker {
         return voteCount;
     }
 
+    function getVotersCount() public view returns (uint count) {
+        return voters.length;
+    }
+
     //
     // only Owner
     //
@@ -113,7 +120,7 @@ contract VoteTracker {
         isVotingActive = true;
     }
 
-    function endVotingPeriod() external onlyOwner votingActive {
+    function stopVotingPeriod() external onlyOwner votingActive {
         isVotingActive = false;
     }
 
