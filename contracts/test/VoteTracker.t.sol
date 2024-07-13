@@ -46,6 +46,14 @@ contract VoteTrackerTest is Test {
         vote();
     }
 
+    function testDoubleVote() public {
+        tracker.startVotingPeriod();
+        vote();
+        vm.expectRevert();
+        vote();
+    }
+
+
     function testVoteWrongHash() public {
         tracker.startVotingPeriod();
         bytes32 r = 0xeb2b3b575960f3d46a04f5c08356a1f10487bca2afaad98a3a8fc034fcee477e;
@@ -67,34 +75,47 @@ contract VoteTrackerTest is Test {
         assertEq(votes[1], 1);
 
         uint16 testVotes = tracker.addrToVote(
-            address(0x0d88350DCBa99a3089510432d7E1A5b89Dd9FD10), 1
+            address(0x0d88350DCBa99a3089510432d7E1A5b89Dd9FD10),
+            1
         );
         assertEq(testVotes, 2);
     }
 
     function testVoteCount() public {
         tracker.startVotingPeriod();
+        require(tracker.getVotersCount() == 0, "should be 0 voter");
         vote();
-        vote();
-        require(tracker.getVotersCount() == 2, "should be 2 voters");
+        require(tracker.getVotersCount() == 1, "should be 1 voter");
         tracker.stopVotingPeriod();
-        // tracker.submitFinalists(finalistsTest);
-        // VoteTracker.Leader[] memory leaderboardTest = tracker.getLeaderboard();
-		// console.log(leaderboardTest.length);
-		// console.log(leaderboardTest[0].addr);
-        // assertEq(leaderboardTest[0].points, 18);
     }
 
-        function testLeaderboard() public {
+    function testLeaderboard() public {
         tracker.startVotingPeriod();
         vote();
-        vote();
-        require(tracker.getVotersCount() == 2, "should be 2 voters");
         tracker.stopVotingPeriod();
-        // tracker.submitFinalists(finalistsTest);
-        // VoteTracker.Leader[] memory leaderboardTest = tracker.getLeaderboard();
-		// console.log(leaderboardTest.length);
-		// console.log(leaderboardTest[0].addr);
-        // assertEq(leaderboardTest[0].points, 18);
+        tracker.submitFinalists(finalistsTest);
+        VoteTracker.Leader[] memory leaderboardTest = tracker.getLeaderboard();
+        console.log(leaderboardTest.length);
+        console.log(leaderboardTest[0].addr);
+        assertEq(leaderboardTest[0].points, 18);
+    }
+
+    function testOnlyOwner() public {
+        vm.startPrank(address(1));
+
+        vm.expectRevert();
+        tracker.startVotingPeriod();
+
+        vm.expectRevert();
+        tracker.submitShowcaseData(projectIdsTest);
+
+        vm.expectRevert();
+        tracker.submitFinalists(finalistsTest);
+
+        vm.stopPrank();
+        tracker.startVotingPeriod();
+        vm.startPrank(address(1));
+        vm.expectRevert();
+        tracker.stopVotingPeriod();
     }
 }

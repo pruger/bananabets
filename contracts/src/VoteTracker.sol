@@ -55,11 +55,6 @@ contract VoteTracker {
         bytes calldata message
     ) external votingActive {
         address sender;
-        for (uint256 i = 0; i < voters.length; i++) {
-            if (voters[i] == sender) {
-                revert("Sender already voted");
-            }
-        }
         uint16[] memory addressToVote;
         (sender, addressToVote) = messageValidator.validateAndExtractData(
             v,
@@ -68,6 +63,11 @@ contract VoteTracker {
             hash,
             message
         );
+        for (uint256 i = 0; i < voters.length; i++) {
+            if (voters[i] == sender) {
+                revert("Sender already voted");
+            }
+        }
         if (isNumDouble(addressToVote)) {
             revert("Duplicate addressToVote");
         }
