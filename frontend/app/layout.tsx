@@ -22,8 +22,6 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
-  viewport:
-    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
 };
 
 export const viewport: Viewport = {
@@ -31,6 +29,10 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: light)", color: "white" },
     { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
+  initialScale: 1,
+  minimumScale: 1,
+  width: "device-width",
+  userScalable: false,
 };
 
 export default function RootLayout({
