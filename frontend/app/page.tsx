@@ -93,7 +93,7 @@ export default function Home() {
   }, []);
 
   const onSubmit = async () => {
-      await execHaloCmdWeb(
+      const res = await execHaloCmdWeb(
         {
           name: "get_data_struct",
           spec: "latchValue",
@@ -104,6 +104,7 @@ export default function Home() {
           },
         }
       );
+      window.alert(res);
     // console.log(selectedProjects.map((val) => projectIds[val]));
     // try {
     //   await execHaloCmdWeb(
