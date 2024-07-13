@@ -96,7 +96,7 @@ export default function Home() {
       const res = await execHaloCmdWeb(
         {
           name: "get_data_struct",
-          spec: "latchValue",
+          spec: "latchValue:1",
         },
         {
           statusCallback: (cause: string) => {
