@@ -13,7 +13,7 @@ import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 
 import abi from "@/public/abi.json";
-const CONTRACT_ADDRESS = "0x04a4BD2355EedA655095f1e4e66738c949e8F50A";
+const CONTRACT_ADDRESS = "0x031E5CFED980B22118Ea476c6D3f6559AC4044D6";
 
 export default function Leaderboard() {
   const [leaderboard, setLeaderboard] = useState<[string, string, number][]>(

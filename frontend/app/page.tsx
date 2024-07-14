@@ -23,7 +23,7 @@ import { toast } from "react-toastify";
 import { ethers } from "ethers";
 
 import abi from "@/public/abi.json";
-const CONTRACT_ADDRESS = "0x04a4BD2355EedA655095f1e4e66738c949e8F50A";
+const CONTRACT_ADDRESS = "0x031E5CFED980B22118Ea476c6D3f6559AC4044D6";
 const API_HOST = "https://predictionmarketapi.cleartxn.xyz";
 
 interface ProjectTileProps {
@@ -86,8 +86,6 @@ export default function Home() {
       const res = await fetch(`${API_HOST}/projects`).then((res) => res.json());
       const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, provider);
       const result = await contract.getProjectIds();
-
-      console.log(result);
 
       setProjectIds(
         result.reduce((acc: any, curr: any, index: any) => {
