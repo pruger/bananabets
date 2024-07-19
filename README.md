@@ -1,5 +1,5 @@
 # BananaBets
-# Created for ETHGlobal Brussels
+## Created for ETHGlobal Brussels
 https://ethglobal.com/showcase/bananabets-w0jbp
 
 THIS PROJECT IS ONLY USABLE ON MOBILE.
