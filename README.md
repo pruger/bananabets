@@ -2,6 +2,8 @@
 ## Created for ETHGlobal Brussels
 https://ethglobal.com/showcase/bananabets-w0jbp
 
+![Prizes](./img/bb.png)
+
 THIS PROJECT IS ONLY USABLE ON MOBILE.
 
 Betting platform where ETHGlobal attendees can forecast hackathon finalists based on showcase data and sign in with their NFC wristbands for frictionless onboarding.
